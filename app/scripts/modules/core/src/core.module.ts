@@ -24,6 +24,7 @@ require('Select2/select2.css');
 require('select2-bootstrap-css/select2-bootstrap.css');
 import 'source-sans-pro/source-sans-pro.css';
 import { RECENT_HISTORY_SERVICE } from './history/recentHistory.service';
+import { EXECUTION_HISTORY_SERVICE } from './history/executionHistory.service';
 require('root/app/fonts/spinnaker/icons.css');
 
 import './analytics/GoogleAnalyticsInitializer';
@@ -160,6 +161,7 @@ module(CORE_MODULE, [
   CORE_PROJECTS_PROJECTS_MODULE,
 
   RECENT_HISTORY_SERVICE,
+  EXECUTION_HISTORY_SERVICE,
   REGION_MODULE,
 
   CORE_SEARCH_SEARCH_MODULE,

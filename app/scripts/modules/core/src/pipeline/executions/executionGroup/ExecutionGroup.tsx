@@ -32,6 +32,7 @@ import { PipelineTemplateReader, PipelineTemplateV2Service } from '../../config/
 import { Spinner } from 'core/widgets/spinners/Spinner';
 
 import './executionGroup.less';
+import { ExecutionFilterService } from '../../filter/executionFilter.service';
 
 const ACCOUNT_TAG_OVERFLOW_LIMIT = 2;
 
@@ -256,6 +257,7 @@ export class ExecutionGroup extends React.PureComponent<IExecutionGroupProps, IE
     const pipelineJustMigrated = pipelineConfig?.migrationStatus === 'STARTED';
     const pipelineDescription = pipelineConfig && pipelineConfig.description;
     const hasRunningExecutions = group.runningExecutions && group.runningExecutions.length > 0;
+    const isFilterApplied = ExecutionFilterService.isFilterApplied();
 
     const deploymentAccountLabels = without(
       this.state.deploymentAccounts || [],
@@ -373,11 +375,18 @@ export class ExecutionGroup extends React.PureComponent<IExecutionGroupProps, IE
         {this.state.open && (
           <div className="execution-groups">
             <div className="execution-group-container">
-              {!group.executions.length && (
+              {!group.executions.length && isFilterApplied ? (
                 <div style={{ paddingBottom: '10px' }}>
                   <em>No executions found matching the selected filters.</em>
                 </div>
-              )}
+              ) : null}
+              {!isFilterApplied && group.executions.length === 0 ? (
+                <div style={{ paddingBottom: '10px' }}>
+                  <em>
+                    There are no running executions in this pipeline.Please select filters to load filtered executions.
+                  </em>
+                </div>
+              ) : null}
               <RenderWhenVisible
                 container={this.props.parent}
                 disableHide={showingDetails}

@@ -52,10 +52,12 @@ export class ExecutionService {
     const statusString = statuses.map((status) => status.toUpperCase()).join(',') || null;
     const call = pipelineConfigIds
       ? REST('/executions').query({ limit, pipelineConfigIds, statuses }).get()
-      : REST('/applications')
+      : statusString !== null
+      ? REST('/applications')
           .path(applicationName, 'pipelines')
           .query({ limit, statuses: statusString, pipelineConfigIds, expand })
-          .get();
+          .get()
+      : REST('/executions').query({ limit, pipelineConfigIds, statuses }).get();
 
     return call.then((data: IExecution[]) => {
       if (data) {
@@ -85,7 +87,9 @@ export class ExecutionService {
   ): PromiseLike<IExecution[]> {
     const sortFilter: ISortFilter = ExecutionState.filterModel.asFilterModel.sortFilter;
     const pipelines = Object.keys(sortFilter.pipeline);
-    const statuses = Object.keys(pickBy(sortFilter.status || {}, identity));
+    let statuses = Object.keys(pickBy(sortFilter.status || {}, identity));
+    const DefaultStatus = ['RUNNING'];
+    statuses = statuses.length > 0 ? statuses : DefaultStatus;
     const limit = sortFilter.count;
     if (application && pipelines.length) {
       return this.getConfigIdsFromFilterModel(application).then((pipelineConfigIds) => {

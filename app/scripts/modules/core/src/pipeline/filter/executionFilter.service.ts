@@ -1,4 +1,4 @@
-import { chain, compact, forOwn, groupBy, includes, uniq } from 'lodash';
+import { chain, compact, forOwn, groupBy, identity, includes, pickBy, uniq } from 'lodash';
 import { Debounce } from 'lodash-decorators';
 import { Subject } from 'rxjs';
 import { $log } from 'ngimport';
@@ -80,6 +80,16 @@ export class ExecutionFilterService {
     ExecutionState.filterModel.asFilterModel.addTags();
     this.lastApplication = application;
     this.groupsUpdatedStream.next(groups);
+  }
+
+  public static isFilterApplied() {
+    const sortFilter: ISortFilter = ExecutionState.filterModel.asFilterModel.sortFilter;
+    const pipelines = Object.keys(sortFilter.pipeline);
+    const statuses = Object.keys(pickBy(sortFilter.status || {}, identity));
+    // Add below line of code once configurable filters are available
+    // const isCustomFilterApplied = this.isCustomFiltersChecked();
+
+    return pipelines.length || statuses.length;
   }
 
   private static pipelineNameFilter(execution: IExecution): boolean {
